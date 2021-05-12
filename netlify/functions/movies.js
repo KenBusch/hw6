@@ -15,33 +15,53 @@ exports.handler = async function(event) {
   // turn the movies file into a JavaScript object, wait for that to happen
   let moviesFromCsv = await csv(moviesFile)
 
-  // write the movies to the back-end console, check it out
-  console.log(moviesFromCsv)
+  // 🔥🔥🔥🔥🔥🔥🔥 hw6: your recipe and code starts here!🔥🔥🔥🔥🔥🔥
 
-  // 🔥 hw6: your recipe and code starts here!
+  //Get the movie release year from the querystring parameter
   let year = event.queryStringParameters.year
+
+  //Get the movie genre from the querystring parameter
   let genre = event.queryStringParameters.genre
   
+  //If statement to check if both year and genre are defined
   if (year == undefined || genre == undefined) {
     return {
       statusCode: 200, // https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
-      body: `Nope!` // a string of data
+      body: `Please provide the movie year and genre!` //Simple error message if undefined
     }
   }
   else {
-    let returnValue = {
-      numResults: 0,
-      movies: []
-    }
+    // create a new object to hold the movie data
+    let moviesToReturn= {}
 
-    for (let i=0; i < moviesFromCsv.length; i++) {
+    // start with an empty Array for the movies
+    moviesToReturn.movies = []
 
+
+  // loop through all movies
+  for (let i=0; i < moviesFromCsv.length; i++) {
+    // store each movie in memory
+    let movie = moviesFromCsv[i]
+    //Push the movies that match year and genre only
+    if (movie.startYear == year && movie.genres == genre) {
+     
+    // Create an movie object to push movie data to
+    let movieObject = {
+      primaryTitle: movie.primaryTitle,
+      year: movie.startYear,
+      genre: movie.genres
     }
+    //Push the movie data to object
+    moviesToReturn.movies.push(movieObject)
+    }
+  }
+  //add the number of movies return to the returned movies Object
+  moviesToReturn.numResults = moviesToReturn.movies.length
 
     // a lambda function returns a status code and a string of data
     return {
       statusCode: 200, // https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
-      body: `Hello from the back-end!` // a string of data
+      body: JSON.stringify(moviesToReturn) // a string of data
     }
   }
 }
